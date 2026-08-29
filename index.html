@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ethics Class Board</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; min-height: 100vh; }
+.hdr { background: #1e1b4b; color: white; padding: 12px 22px; display: flex; justify-content: space-between; align-items: center; }
+.hdr-title { font-size: 17px; font-weight: 700; }
+.hdr-sub { font-size: 12px; color: #a5b4fc; margin-top: 2px; }
+.tabs { display: flex; background: #2d2a6e; padding: 0 22px; gap: 4px; }
+.tab { padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: #a5b4fc; border-bottom: 3px solid transparent; background: none; border-top: none; border-left: none; border-right: none; }
+.tab.on { color: white; border-bottom-color: #818cf8; }
+.s-wrap { max-width: 540px; margin: 32px auto; padding: 0 20px; }
+.prompt-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+.p-label { font-size: 10px; font-weight: 700; color: #1d4ed8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+.p-text { font-size: 15px; color: #1e3a8a; line-height: 1.6; font-weight: 500; }
+.info-card { background: white; border-radius: 14px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-align: center; }
+.info-icon { font-size: 40px; margin-bottom: 14px; }
+.info-title { font-size: 18px; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+.info-sub { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 20px; }
+.form-link-btn { display: inline-block; padding: 13px 28px; background: #4f46e5; color: white; border-radius: 10px; font-weight: 700; font-size: 15px; text-decoration: none; }
+.pin-wrap { max-width: 360px; margin: 80px auto; padding: 0 20px; }
+.pin-card { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; }
+.pin-icon { font-size: 36px; margin-bottom: 12px; }
+.pin-title { font-size: 18px; font-weight: 700; color: #1e1b4b; margin-bottom: 6px; }
+.pin-sub { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+.pin-input { width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 22px; text-align: center; letter-spacing: 8px; font-family: monospace; outline: none; margin-bottom: 12px; }
+.pin-input:focus { border-color: #4f46e5; }
+.pin-btn { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; }
+.pin-err { color: #dc2626; font-size: 13px; margin-top: 8px; display: none; }
+.board { padding: 18px 22px; }
+.prompt-bar { background: white; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.bar-lbl { font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.prompt-display-board { font-size: 14px; color: #1e3a8a; line-height: 1.5; font-weight: 500; }
+.ctrls { display: flex; gap: 9px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.cb { padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-size: 13px; }
+.cb:disabled { opacity: 0.45; cursor: not-allowed; }
+.cb-ai { background: #4f46e5; color: white; }
+.cb-all { background: #6b7280; color: white; }
+.cb-ref { background: #059669; color: white; }
+.err { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px 16px; color: #b91c1c; font-size: 13px; margin-bottom: 14px; }
+.empty { text-align: center; padding: 70px 20px; background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.empty-ico { font-size: 40px; margin-bottom: 12px; }
+.empty-t { font-size: 17px; font-weight: 700; color: #374151; margin-bottom: 6px; }
+.empty-s { font-size: 13px; color: #9ca3af; line-height: 1.6; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 11px; }
+.rc { background: white; border-radius: 11px; padding: 13px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #4f46e5; }
+.rc-name { font-size: 11px; font-weight: 700; color: #4f46e5; margin-bottom: 4px; }
+.rc-field { font-weight: 400; color: #9ca3af; }
+.rc-text { font-size: 13px; color: #374151; line-height: 1.5; }
+.rc-time { font-size: 11px; color: #d1d5db; margin-top: 7px; }
+.ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; }
+.gcol { border-radius: 13px; overflow: hidden; border: 2px solid; }
+.ghdr { padding: 11px 15px; display: flex; justify-content: space-between; align-items: center; }
+.gtitle { color: white; font-weight: 700; font-size: 14px; }
+.gcnt { background: rgba(255,255,255,0.25); color: white; border-radius: 20px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+.gbody { padding: 11px; display: flex; flex-direction: column; gap: 8px; }
+.gcard { background: white; border-radius: 9px; padding: 11px 13px; }
+.gname { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.gfield { font-weight: 400; color: #9ca3af; }
+.gtext { font-size: 13px; color: #374151; line-height: 1.5; }
+.spin { display: inline-block; width: 11px; height: 11px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: sp 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">AI Ethics Class Board</div>
+    <div class="hdr-sub" id="hdr-sub">Loading...</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" id="tab-s" onclick="switchTab('student')">📝 Student — Submit Here</button>
+  <button class="tab" id="tab-b" onclick="switchTab('board')">📊 Live Board (Professor)</button>
+</div>
+
+<div id="view-student">
+  <div class="s-wrap">
+    <div class="prompt-box">
+      <div class="p-label">Today's Prompt</div>
+      <div class="p-text" id="student-prompt"></div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📋</div>
+      <div class="info-title">Submit your response</div>
+      <div class="info-sub">Click the button, fill in your name, field of study, and response to today's prompt, then hit Submit.</div>
+      <a class="form-link-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdJLyRMPuI2Pw4Dj_y2jEQ3D8M9MmuViLHNcaC5Os6PboJgnA/viewform" target="_blank">Open Response Form →</a>
+    </div>
+  </div>
+</div>
+
+<div id="view-pin" style="display:none;">
+  <div class="pin-wrap">
+    <div class="pin-card">
+      <div class="pin-icon">🔒</div>
+      <div class="pin-title">Professor Access Only</div>
+      <div class="pin-sub">Enter the 4-digit PIN to access the Live Board</div>
+      <input class="pin-input" id="pin-input" type="password" maxlength="4" placeholder="••••" onkeyup="if(event.key==='Enter') checkPin()" />
+      <button class="pin-btn" onclick="checkPin()">Enter</button>
+      <div class="pin-err" id="pin-err">Incorrect PIN. Try again.</div>
+    </div>
+  </div>
+</div>
+
+<div id="view-board" style="display:none;">
+  <div class="board">
+    <div class="prompt-bar">
+      <div class="bar-lbl">Today's Prompt — shown to students on the Submit tab</div>
+      <div class="prompt-display-board" id="board-prompt"></div>
+    </div>
+    <div class="ctrls">
+      <button class="cb cb-ai" id="grp-btn" onclick="groupAI()">✦ Group by AI Theme</button>
+      <button class="cb cb-all" id="all-btn" onclick="showAll()" style="display:none;">Show All</button>
+      <button class="cb cb-ref" onclick="load()">Refresh Now</button>
+    </div>
+    <div id="err" class="err" style="display:none;"></div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+
+// ════════════════════════════════════════
+// CHANGE ONLY THIS LINE BEFORE EACH CLASS
+const THIS_WEEK_PROMPT = "Today we learned about AI Governance. One way this applies to or affects my field is...";
+// ════════════════════════════════════════
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKzLykVPo8ob4024eZPSnjxFuhfpnOyGwumLh0FCnVp8XgZrkiyKdVZhO3IS1GRR06GeyefaqhEVJ8/pub?output=csv";
+const BOARD_PIN = "2026";
+
+const COLORS = [
+  {bg:"#dbeafe",border:"#3b82f6",hdr:"#1d4ed8"},
+  {bg:"#f3e8ff",border:"#a855f7",hdr:"#7e22ce"},
+  {bg:"#dcfce7",border:"#22c55e",hdr:"#15803d"},
+  {bg:"#ffedd5",border:"#f97316",hdr:"#c2410c"},
+  {bg:"#fce7f3",border:"#ec4899",hdr:"#be185d"},
+];
+
+let responses=[], grouped=null, pinPassed=false;
+
+document.getElementById('student-prompt').textContent = THIS_WEEK_PROMPT;
+document.getElementById('board-prompt').textContent = THIS_WEEK_PROMPT;
+
+function checkPin(){
+  const val = document.getElementById('pin-input').value;
+  if(val === BOARD_PIN){
+    pinPassed = true;
+    document.getElementById('view-pin').style.display='none';
+    document.getElementById('view-board').style.display='block';
+    load();
+  } else {
+    document.getElementById('pin-err').style.display='block';
+    document.getElementById('pin-input').value='';
+  }
+}
+
+function switchTab(t){
+  if(t==='board' && !pinPassed){
+    document.getElementById('view-student').style.display='none';
+    document.getElementById('view-pin').style.display='block';
+    document.getElementById('view-board').style.display='none';
+    document.getElementById('tab-s').classList.remove('on');
+    document.getElementById('tab-b').classList.add('on');
+    setTimeout(()=>document.getElementById('pin-input').focus(),100);
+    return;
+  }
+  document.getElementById('view-student').style.display=t==='student'?'block':'none';
+  document.getElementById('view-pin').style.display='none';
+  document.getElementById('view-board').style.display=t==='board'?'block':'none';
+  document.getElementById('tab-s').classList.toggle('on',t==='student');
+  document.getElementById('tab-b').classList.toggle('on',t==='board');
+  if(t==='board') render();
+}
+
+function parseCSV(txt){
+  const rows=[];
+  for(const line of txt.replace(/\r/g,'').split('\n')){
+    if(!line.trim()) continue;
+    const cols=[]; let f='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      if(line[i]==='"'){if(inQ&&line[i+1]==='"'){f+='"';i++;}else inQ=!inQ;}
+      else if(line[i]===','&&!inQ){cols.push(f.trim());f='';}
+      else f+=line[i];
+    }
+    cols.push(f.trim()); rows.push(cols);
+  }
+  return rows;
+}
+
+async function load(){
+  try{
+    const r=await fetch(SHEET_URL+'&cb='+Date.now());
+    const txt=await r.text();
+    const rows=parseCSV(txt);
+    if(rows.length<2){responses=[];render();sub();return;}
+    responses=rows.slice(1).filter(r=>r.length>=4&&r[1]).map((r,i)=>({
+      id:i,time:r[0]||'',name:r[1]||'?',field:r[2]||'?',response:r[3]||''
+    }));
+    showErr(null);
+  }catch(e){
+    showErr('Could not load responses. Check your internet connection.');
+  }
+  sub(); render();
+}
+
+async function groupAI(){
+  if(responses.length<2){alert('Need at least 2 responses to group.');return;}
+  const btn=document.getElementById('grp-btn');
+  btn.innerHTML='<span class="spin"></span>Grouping...'; btn.disabled=true;
+  grouped=null; showErr(null);
+  try{
+    const res=await fetch('/.netlify/functions/group',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({responses})
+    });
+    const data=await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const text=data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    const parsed=JSON.parse(text.trim());
+    grouped=parsed.groups.map((g,gi)=>({
+      theme:g.theme,colors:COLORS[gi%COLORS.length],
+      items:g.indices.map(idx=>responses[idx-1]).filter(Boolean)
+    }));
+    document.getElementById('all-btn').style.display='inline-block';
+  }catch(e){
+    showErr('Grouping failed: '+e.message);
+  }
+  btn.innerHTML='✦ Group by AI Theme'; btn.disabled=false;
+  render();
+}
+
+function showAll(){
+  grouped=null;
+  document.getElementById('all-btn').style.display='none';
+  render();
+}
+
+function sub(){
+  const n=responses.length;
+  document.getElementById('hdr-sub').textContent=`${n} response${n!==1?'s':''} · refreshed ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} · auto-refreshes every 30s`;
+}
+
+function showErr(msg){
+  const el=document.getElementById('err');
+  el.style.display=msg?'block':'none';
+  if(msg) el.textContent=msg;
+}
+
+function render(){
+  const el=document.getElementById('content');
+  if(!responses.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-t">Waiting for responses</div><div class="empty-s">Share the board link in Zoom chat · students click Submit tab · fill the Google Form.<br>Responses appear here automatically every 30 seconds.</div></div>`;
+    return;
+  }
+  if(grouped){
+    el.innerHTML=`<div class="ggrid">${grouped.map(g=>`
+      <div class="gcol" style="background:${g.colors.bg};border-color:${g.colors.border};">
+        <div class="ghdr" style="background:${g.colors.hdr};">
+          <span class="gtitle">${g.theme}</span><span class="gcnt">${g.items.length}</span>
+        </div>
+        <div class="gbody">${g.items.map(r=>`
+          <div class="gcard">
+            <div class="gname" style="color:${g.colors.hdr};">${r.name} <span class="gfield">· ${r.field}</span></div>
+            <div class="gtext">${r.response}</div>
+          </div>`).join('')}
+        </div>
+      </div>`).join('')}</div>`;
+    return;
+  }
+  el.innerHTML=`<div class="cards">${responses.map(r=>`
+    <div class="rc">
+      <div class="rc-name">${r.name} <span class="rc-field">· ${r.field}</span></div>
+      <div class="rc-text">${r.response}</div>
+      <div class="rc-time">${r.time}</div>
+    </div>`).join('')}</div>`;
+}
+
+load();
+setInterval(load,30000);
+</script>
+</body>
+</html>
